@@ -3,7 +3,8 @@ R package used in 'Pleiotropic heritability quantifies the shared genetic varian
 
 ## **Definition and estimation of pleiotropic heritability (h<SUP>2</SUP><SUB>pleio</SUB>)**
 See Figure 1 in manuscript:
-[Figure1.pdf](https://github.com/user-attachments/files/20746082/Figure1.pdf)
+![image](https://github.com/user-attachments/assets/f7424522-f1ba-4312-9db6-e10b2e8e47a1)
+
 
 The total phenotypic variance of the target disease consists of genetic variance (G) and environmental variance (E). The genetic variance of the target disease is partitioned into a disease-specific component and a pleiotropic component. The disease-specific component is not shared with the auxiliary diseases, and the pleiotropic component consists of a linear combination of the genetic values (G1, G2, …, Gn) for auxiliary diseases 1 to n.
 
@@ -33,7 +34,7 @@ output_dir <- system.file("extdata/GWAS_sumstat",package = "pleioh2g") #Director
 trait_names<-c("401.1","250.2","296.22") #trait_names is a vector of phenotype name for prefix name of .sumstats.gz data - in the same order as GWAS in gwas_dir
 munge_gwas_allphenotype(hmp3, gwas_dir, Nsamp, trait_names,output_dir)
 ```
- #### Step 2: Compute heritability and genetic correlation point estimates from cross-trait LDSC.
+### Step 2: Compute heritability and genetic correlation point estimates from cross-trait LDSC.
 **Cal_rg_h2g_alltraits.R** is to compute h<sup>2</sup> and r<sub>g</sub> point estimates using cross-trait LDSC. (This function implements ldscr R package).
 ```
 phenotype_path<-system.file("extdata", "phenotype_name_package_test.txt",package = "pleioh2g") #phenotype_path is the directory path to the phenotype name file - a .txt file that listed the all phenotype names for all GWAS summary statistics with header named 'traits'.
@@ -51,7 +52,7 @@ population_prev_path = system.file("extdata", "pop_prev_test.txt",package = "ple
 Cal_rg_h2g_alltraits(phenotype_path, gwas_munge_dir, save_path, ld_path, wld_path, sample_prev_path, population_prev_path)
 ```
 Through this step, you can obtain h<sup>2</sup>, h<sup>2</sup> z-scores, r<sub>g</sub>, r<sub>g</sub> z-scores, genetic covariance point estimates matrix ('Results_full_h2.rds', 'Results_full_h2Z.rds', 'Results_full_rg.rds', 'Results_full_rgz.rds', 'Results_full_gcov.rds') and liability-scale h<sup>2</sup> matrix ('Results_full_h2_lia.rds') (if you set sample_prev_path and population_prev_path) in the save_path.
- #### Step 3: Compute heritability and genetic correlation jackknife estimates from cross-trait LDSC.
+### Step 3: Compute heritability and genetic correlation jackknife estimates from cross-trait LDSC.
 **Cal_rg_h2g_jk_alltraits.R** is to perform genomic-block jackknife and computes h<sup>2</sup> and r<sub>g</sub> jackknife estimates using cross-trait LDSC. (This function implements ldscr R package).
 * We reimplement cross-trait LDSC jackknife procedure to guarantee the standard errors of all elements in genetic correlation matrix are estimated through the same genomic jackknife blocks.
 * Jackknife blocks are created by partitioning 1,217,311 HapMap 3 SNPs. 
@@ -75,7 +76,7 @@ n_block=200
 Cal_rg_h2g_jk_alltraits(n_block, hmp3, phenotype_path, gwas_munge_dir, save_path, ld_path, wld_path, sample_prev_path, population_prev_path)
 ```
 Through this step, you can obtain h<sup>2</sup> and r<sub>g</sub> jackknife estimate array ('Results_full_h2_array.rds', 'Results_full_rg_array.rds') and liability-scale h<sup>2</sup> jackknife estimate array ('Results_full_h2_lia_array.rds') (if you set sample_prev_path and population_prev_path) in the save_path.
- #### Step 4: Compute pleiotropic heritability 
+### Step 4: Compute pleiotropic heritability 
 **pruning_pleioh2g_corr_single_rgzscore_cutatall_more.R** is to in computing h<SUP>2</SUP><SUB>pleio</SUB> / h<SUP>2</SUP> while performing pruning and bias correction.
 * We note that h<SUP>2</SUP><SUB>pleio</SUB> is a function of both the target disease and the selected set of auxiliary diseases/traits. We use the ratio of pleiotropic heritability vs. total heritability (h<SUP>2</SUP><SUB>pleio</SUB> / h<SUP>2</SUP>) to quantify the proportion of genetic variance that is pleiotropic.
 ```
@@ -103,12 +104,18 @@ You can obtain a result table with colnames and corresponding meanings:
 'target disease name' | 'h<sup>2</sup> estimate of target disease' | 'h<sup>2</sup> jackknife s.e. of target disease' | 'auxiliary phenotypes included to compute h<SUP>2</SUP><SUB>pleio</SUB> / h<SUP>2</SUP>' | 'pre-correction h<SUP>2</SUP><SUB>pleio</SUB> ' | 'pre-correction h<SUP>2</SUP><SUB>pleio</SUB> jackknife s.e.' | 'pre-correction h<SUP>2</SUP><SUB>pleio</SUB> / h<sup>2</sup>' | 'pre-correction h<SUP>2</SUP><SUB>pleio</SUB> / h<sup>2</sup> jackknife s.e.' | 'post-correction h<SUP>2</SUP><SUB>pleio</SUB>'| 'post-correction h<SUP>2</SUP><SUB>pleio</SUB> jackknife s.e.' | 'post-correction h<SUP>2</SUP><SUB>pleio</SUB> / h<sup>2</sup>'| 'post-correction h<SUP>2</SUP><SUB>pleio</SUB> / h<sup>2</sup> jackknife s.e.' | 'corrected weight ξ<sub>c</sub>'|
 
 You can also obtain a .rds data which is a vector containing each pre-correction h<SUP>2</SUP><SUB>pleio</SUB> / h<sup>2</sup> jackknife estimate.
-#### Additional step: compute pleiotropic heritability in leave-category-out analyses 
+
+### Additional step: compute pleiotropic heritability in leave-category-out analyses 
 **pleiotropyh2_D_T.R** is to compute h<SUP>2</SUP><SUB>pleio</SUB> / h<SUP>2</SUP> excluding target disease category
+
 **pleiotropyh2_D_othersone.R** is to compute h<SUP>2</SUP><SUB>pleio</SUB> / h<SUP>2</SUP> excluding one other specified category
+
 **pleiotropyh2_D_othersall.R** is to compute h<SUP>2</SUP><SUB>pleio</SUB> / h<SUP>2</SUP> excluding each other category one by one
+
 **pleiotropyh2_D_T_othersone.R** is to compute h<SUP>2</SUP><SUB>pleio</SUB> / h<SUP>2</SUP> excluding target disease category and one other specified category
+
 **pleiotropyh2_D_T_othersall.R** is to compute h<SUP>2</SUP><SUB>pleio</SUB> / h<SUP>2</SUP> excluding target disease category and each other category one by one
+
 * We note these analyses need to use interactively dependent auxiliary diseases sets. 
     * If you perform analyses excluding target disease category or any one category, you need to first perform analyses using all auxiliary diseases and take the output result table as input ('allauxD_results_path') in pleiotropyh2_D_T.R or pleiotropyh2_D_othersone.R, because the pruning begins at the actual auxiliary diseases using in last analyses.
     * If you perform analyses excluding target disease category and one other specified category, you need to first perform analyses using all auxiliary diseases excluding target disease category and take the output result table as input ('allauxD_T_results_path') in pleiotropyh2_D_T_othersone.R, because the pruning begins at the actual auxiliary diseases using in last analyses. (See example as below)
