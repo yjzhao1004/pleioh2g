@@ -20,7 +20,7 @@ devtools::install_github("yjzhao1004/pleioh2g")
 ### **Data Preparation**
 Our method uses multiple-trait GWAS summary statistics as input and computes genetic correlation by cross-trait LDSC (Bulik-Sullivan et al. 2015b *Nat Genet*)
 * We used 1000 Genomes Project Europeans as a reference LD panel to estimate genetic correlation. 1000G European LD-scores and HapMap 3 SNPs list are available at https://data.broadinstitute.org/alkesgroup/LDSCORE.
-* Summary association statistics for all diseases/traits analyzed in this study are available at https://alkesgroup.broadinstitute.org/PHBC/.
+* Summary association statistics (LDSC format .sumstat.gz) for all diseases/traits analyzed in this study are available at https://alkesgroup.broadinstitute.org/PHBC/.
 
 ### **Steps**
 ### Step 1: Prepare LDSC input-format data for multiple traits.
