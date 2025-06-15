@@ -3,6 +3,8 @@ R package used in 'Pleiotropic heritability quantifies the shared genetic varian
 
 ## **Definition and estimation of pleiotropic heritability (h<SUP>2</SUP><SUB>pleio</SUB>)**
 See Figure 1 in manuscript:
+[Figure1.pdf](https://github.com/user-attachments/files/20746082/Figure1.pdf)
+
 The total phenotypic variance of the target disease consists of genetic variance (G) and environmental variance (E). The genetic variance of the target disease is partitioned into a disease-specific component and a pleiotropic component. The disease-specific component is not shared with the auxiliary diseases, and the pleiotropic component consists of a linear combination of the genetic values (G1, G2, …, Gn) for auxiliary diseases 1 to n.
 
 We define **pleiotropic heritability h<SUP>2</SUP><SUB>pleio</SUB>** as the liability-scale genetic variance (estimated from SNPs) of a target disease that is shared with a specific set of auxiliary diseases. 
@@ -20,7 +22,7 @@ Our method uses multiple-trait GWAS summary statistics as input and computes gen
 * Summary association statistics for all diseases/traits analyzed in this study are available at https://alkesgroup.broadinstitute.org/PHBC/.
 
 ### **Steps**
-#### Step 1: Prepare LDSC input-format data for multiple traits.
+### Step 1: Prepare LDSC input-format data for multiple traits.
 **munge_gwas_allphenotype.R** is to transform GWAS summary statistics to prepare LDSC .sumstat.gz data for all phenotypes (This function implements GenomicSEM R package; ref. Grotzinger et al. 2019)
 (If you already have LDSC .sumstat.gz data, skip it and go to step 2)
  ```
