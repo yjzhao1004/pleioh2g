@@ -17,7 +17,7 @@ Imports:
     ldscr,
     GenomicSEM,
     mvtnorm，
-    remote
+    remotes
 Remotes:
     GenomicSEM/GenomicSEM,
     mglev1n/ldscr
