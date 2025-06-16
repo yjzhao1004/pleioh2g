@@ -16,11 +16,15 @@ Imports:
     dplyr,
     ldscr,
     GenomicSEM,
-    mvtnorm，
+    mvtnorm,
     remotes
 Remotes:
     GenomicSEM/GenomicSEM,
     mglev1n/ldscr
+Suggests:
+    knitr,
+    rmarkdown,
+    testthat (>= 3.0.0)
 Suggests:
     knitr,
     rmarkdown,
