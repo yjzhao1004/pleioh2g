@@ -19,8 +19,8 @@ Imports:
     mvtnorm,
     remotes
 Remotes:
-    GenomicSEM/GenomicSEM,
-    mglev1n/ldscr
+    mglev1n/ldscr,
+    GenomicSEM/GenomicSEM
 Suggests:
     knitr,
     rmarkdown,
