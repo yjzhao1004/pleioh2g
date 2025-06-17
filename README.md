@@ -26,7 +26,10 @@ Our method uses multiple-trait GWAS summary statistics as input and computes gen
 ### **Steps**
 ### Step 1: Prepare LDSC input-format data for multiple traits.
 **munge_gwas_allphenotype.R** is to transform GWAS summary statistics to prepare LDSC .sumstat.gz data for all phenotypes (This function implements GenomicSEM R package; ref. Grotzinger et al. 2019)
-(If you already have LDSC .sumstat.gz data, skip it and go to step 2)
+Before conducting this step, please specify a directory for 'output_dir' where the output results can be stored. If you run the example code below, you may get your output results in your R library ./pleioh2g/extdata/GWAS_sumstat/.
+If you already have LDSC .sumstat.gz data, skip it and go to step 2.
+Please see the end-of-line comments to specify your input data. 
+
  ```
  hmp3 <- system.file("extdata", "w_hm3.snplist",package = "pleioh2g") #hmp3 is the directory path to the Hapmap3 snplist file.
 gwas_dir <- c(system.file("extdata/GWAS_example","401.1_gwas.txt.gz", package = "pleioh2g"),system.file("extdata/GWAS_example","250.2_gwas.txt.gz",package = "pleioh2g"),system.file("extdata/GWAS_example","296.22_gwas.txt.gz", package = "pleioh2g")) #gwas_dir is a vector of GWAS summary statistics path
@@ -38,6 +41,9 @@ munge_gwas_allphenotype(hmp3, gwas_dir, Nsamp, trait_names,output_dir)
 ```
 ### Step 2: Compute heritability and genetic correlation point estimates from cross-trait LDSC.
 **Cal_rg_h2g_alltraits.R** is to compute h<sup>2</sup> and r<sub>g</sub> point estimates using cross-trait LDSC. (This function implements ldscr R package).
+Before conducting this step, please specify a directory for 'save_path' where the output results can be stored. If you run the example code below, you may get your output results in your R library ./pleioh2g/extdata/rg_results_test/.
+Please see the comments in the example code below to specify your input data. 
+
 ```
 phenotype_path<-system.file("extdata", "phenotype_name_package_test.txt",package = "pleioh2g") #phenotype_path is the directory path to the phenotype name file - a .txt file that listed the all phenotype names for all GWAS summary statistics with header named 'traits'.
 gwas_dir <- c(system.file("extdata/GWAS_example","401.1_gwas.txt.gz", package = "pleioh2g"),system.file("extdata/GWAS_example","250.2_gwas.txt.gz",package = "pleioh2g"),system.file("extdata/GWAS_example","296.22_gwas.txt.gz", package = "pleioh2g")) #gwas_dir is a vector of GWAS summary statistics path
@@ -55,10 +61,14 @@ population_prev_path = system.file("extdata", "pop_prev_test.txt",package = "ple
 Cal_rg_h2g_alltraits(phenotype_path, gwas_munge_dir, save_path, ld_path, wld_path, sample_prev_path, population_prev_path)
 ```
 Through this step, you can obtain h<sup>2</sup>, h<sup>2</sup> z-scores, r<sub>g</sub>, r<sub>g</sub> z-scores, genetic covariance point estimates matrix ('Results_full_h2.rds', 'Results_full_h2Z.rds', 'Results_full_rg.rds', 'Results_full_rgz.rds', 'Results_full_gcov.rds') and liability-scale h<sup>2</sup> matrix ('Results_full_h2_lia.rds') (if you set sample_prev_path and population_prev_path) in the save_path.
+
 ### Step 3: Compute heritability and genetic correlation jackknife estimates from cross-trait LDSC.
 **Cal_rg_h2g_jk_alltraits.R** is to perform genomic-block jackknife and computes h<sup>2</sup> and r<sub>g</sub> jackknife estimates using cross-trait LDSC. (This function implements ldscr R package).
 * We reimplement cross-trait LDSC jackknife procedure to guarantee the standard errors of all elements in genetic correlation matrix are estimated through the same genomic jackknife blocks.
-* Jackknife blocks are created by partitioning 1,217,311 HapMap 3 SNPs. 
+* Jackknife blocks are created by partitioning 1,217,311 HapMap 3 SNPs.
+* Before conducting this step, please specify a directory for 'save_path' where the output results can be stored. If you run the example code below, you may get your output results in your R library ./pleioh2g/extdata/rg_results_test/.
+* Please see the comments in the example code below to specify your input data.  
+
 ```
 hmp3 <- system.file("extdata", "w_hm3.snplist",package = "pleioh2g") #hmp3 is the directory path to the Hapmap3 snplist file.
 phenotype_path<-system.file("extdata", "phenotype_name_package_test.txt",package = "pleioh2g") #phenotype_path is the directory path to the phenotype name file - a .txt file that listed the all phenotype names for all GWAS summary statistics with header named 'traits'.
@@ -83,6 +93,9 @@ Through this step, you can obtain h<sup>2</sup> and r<sub>g</sub> jackknife esti
 ### Step 4: Compute pleiotropic heritability 
 **pruning_pleioh2g_corr_single_rgzscore_cutatall_more.R** is to in computing h<SUP>2</SUP><SUB>pleio</SUB> / h<SUP>2</SUP> while performing pruning and bias correction.
 * We note that h<SUP>2</SUP><SUB>pleio</SUB> is a function of both the target disease and the selected set of auxiliary diseases/traits. We use the ratio of pleiotropic heritability vs. total heritability (h<SUP>2</SUP><SUB>pleio</SUB> / h<SUP>2</SUP>) to quantify the proportion of genetic variance that is pleiotropic.
+* Before conducting this step, please specify a directory for 'save_path' where the output results can be stored. If you run the example code below, you may get your output results in your R library ./pleioh2g/extdata/save_results_test/D/.
+* Please see the comments in the example code below to specify your input data. 
+
 ```
 # First to determine which disease in your list is the target disease
 G = 3 # Index of target disease in trait list
@@ -125,6 +138,7 @@ You can also obtain a .rds data which is a vector containing each pre-correction
 * We note these analyses need to use interactively dependent auxiliary diseases sets. 
     * If you perform analyses excluding target disease category or any one category, you need to first perform analyses using all auxiliary diseases and take the output result table as input ('allauxD_results_path') in pleiotropyh2_D_T.R or pleiotropyh2_D_othersone.R, because the pruning begins at the actual auxiliary diseases using in last analyses.
     * If you perform analyses excluding target disease category and one other specified category, you need to first perform analyses using all auxiliary diseases excluding target disease category and take the output result table as input ('allauxD_T_results_path') in pleiotropyh2_D_T_othersone.R, because the pruning begins at the actual auxiliary diseases using in last analyses. (See example as below)
+    * Please see the comments in the example code below to specify your input data. 
 ```
 #First to determine which disease in your list is the target disease
 G = 3 # Index of target disease in trait list
