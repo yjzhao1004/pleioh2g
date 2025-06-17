@@ -26,9 +26,9 @@ Our method uses multiple-trait GWAS summary statistics as input and computes gen
 ### **Steps**
 ### Step 1: Prepare LDSC input-format data for multiple traits.
 **munge_gwas_allphenotype.R** is to transform GWAS summary statistics to prepare LDSC .sumstat.gz data for all phenotypes (This function implements GenomicSEM R package; ref. Grotzinger et al. 2019)
-Before conducting this step, please specify a directory for 'output_dir' where the output results can be stored. If you run the example code below, you may get your output results in your R library ./pleioh2g/extdata/GWAS_sumstat/.
-If you already have LDSC .sumstat.gz data, skip it and go to step 2.
-Please see the end-of-line comments to specify your input data. 
+* Before conducting this step, please specify a directory for 'output_dir' where the output results can be stored. If you run the example code below, you may get your output results in your R library ./pleioh2g/extdata/GWAS_sumstat/.
+* If you already have LDSC .sumstat.gz data, skip it and go to step 2.
+* Please see the end-of-line comments to specify your input data. 
 
  ```
  hmp3 <- system.file("extdata", "w_hm3.snplist",package = "pleioh2g") #hmp3 is the directory path to the Hapmap3 snplist file.
@@ -41,8 +41,8 @@ munge_gwas_allphenotype(hmp3, gwas_dir, Nsamp, trait_names,output_dir)
 ```
 ### Step 2: Compute heritability and genetic correlation point estimates from cross-trait LDSC.
 **Cal_rg_h2g_alltraits.R** is to compute h<sup>2</sup> and r<sub>g</sub> point estimates using cross-trait LDSC. (This function implements ldscr R package).
-Before conducting this step, please specify a directory for 'save_path' where the output results can be stored. If you run the example code below, you may get your output results in your R library ./pleioh2g/extdata/rg_results_test/.
-Please see the comments in the example code below to specify your input data. 
+* Before conducting this step, please specify a directory for 'save_path' where the output results can be stored. If you run the example code below, you may get your output results in your R library ./pleioh2g/extdata/rg_results_test/.
+* Please see the comments in the example code below to specify your input data. 
 
 ```
 phenotype_path<-system.file("extdata", "phenotype_name_package_test.txt",package = "pleioh2g") #phenotype_path is the directory path to the phenotype name file - a .txt file that listed the all phenotype names for all GWAS summary statistics with header named 'traits'.
