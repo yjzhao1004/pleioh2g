@@ -139,6 +139,8 @@ data("Rg_mat_z_45D")
 #Before you preform leave-category-out analyses, you need to prepare a .csv or .txt phenotype file including phenotype name, h<sup>2</sup> z-scores and category information data with col names: 1st col: 'traits'; 2nd col: 'h2_z'; 3rd col: 'Category' 
 #' phenotype_path <- system.file("extdata", "Disease_45d_h2Z_Category.csv",package = "pleioh2g")
 
+dir.create(file.path(system.file("extdata",package = "pleioh2g"),"save_results_test"))
+dir.create(file.path(system.file("extdata/save_results_test",package = "pleioh2g"),"D_T_others"))
 save_path <- system.file("extdata", "save_results_test/D_T_others",package = "pleioh2g") # Directory where post-corrected pleioh2g results will be stored.
 sample_rep <- 1000 # Monte Carlo sampling iterations in bias correction
 tolerance <- 1e-6 # Default tolerance for binary search in bias correction
