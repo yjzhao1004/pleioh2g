@@ -31,6 +31,7 @@ Our method uses multiple-trait GWAS summary statistics as input and computes gen
  hmp3 <- system.file("extdata", "w_hm3.snplist",package = "pleioh2g") #hmp3 is the directory path to the Hapmap3 snplist file.
 gwas_dir <- c(system.file("extdata/GWAS_example","401.1_gwas.txt.gz", package = "pleioh2g"),system.file("extdata/GWAS_example","250.2_gwas.txt.gz",package = "pleioh2g"),system.file("extdata/GWAS_example","296.22_gwas.txt.gz", package = "pleioh2g")) #gwas_dir is a vector of GWAS summary statistics path
  Nsamp <- c(157206,157206,157206) #Nsamp is a vector of sample size for these summary statistics - in the same order as GWAS in gwas_dir
+dir.create(file.path(system.file("extdata",package = "pleioh2g"),"GWAS_sumstat"))
 output_dir <- system.file("extdata/GWAS_sumstat",package = "pleioh2g") #Directory where LDSC format .sumstats.gz will be stored.
 trait_names<-c("401.1","250.2","296.22") #trait_names is a vector of phenotype name for prefix name of .sumstats.gz data - in the same order as GWAS in gwas_dir
 munge_gwas_allphenotype(hmp3, gwas_dir, Nsamp, trait_names,output_dir)
@@ -40,6 +41,7 @@ munge_gwas_allphenotype(hmp3, gwas_dir, Nsamp, trait_names,output_dir)
 ```
 phenotype_path<-system.file("extdata", "phenotype_name_package_test.txt",package = "pleioh2g") #phenotype_path is the directory path to the phenotype name file - a .txt file that listed the all phenotype names for all GWAS summary statistics with header named 'traits'.
 gwas_dir <- c(system.file("extdata/GWAS_example","401.1_gwas.txt.gz", package = "pleioh2g"),system.file("extdata/GWAS_example","250.2_gwas.txt.gz",package = "pleioh2g"),system.file("extdata/GWAS_example","296.22_gwas.txt.gz", package = "pleioh2g")) #gwas_dir is a vector of GWAS summary statistics path
+dir.create(file.path(system.file("extdata",package = "pleioh2g"),"rg_results_test"))
 save_path <- system.file("extdata", "rg_results_test",package = "pleioh2g") #save_path is the directory where .rds format rg + h2g matrix will be stored.
 
 #replace ld_path and wld_path to your own LD-scores directory path
@@ -61,6 +63,7 @@ Through this step, you can obtain h<sup>2</sup>, h<sup>2</sup> z-scores, r<sub>g
 hmp3 <- system.file("extdata", "w_hm3.snplist",package = "pleioh2g") #hmp3 is the directory path to the Hapmap3 snplist file.
 phenotype_path<-system.file("extdata", "phenotype_name_package_test.txt",package = "pleioh2g") #phenotype_path is the directory path to the phenotype name file - a .txt file that listed the all phenotype names for all GWAS summary statistics with header named 'traits'.
 gwas_dir <- c(system.file("extdata/GWAS_example","401.1_gwas.txt.gz", package = "pleioh2g"),system.file("extdata/GWAS_example","250.2_gwas.txt.gz",package = "pleioh2g"),system.file("extdata/GWAS_example","296.22_gwas.txt.gz", package = "pleioh2g")) #gwas_dir is a vector of GWAS summary statistics path
+dir.create(file.path(system.file("extdata",package = "pleioh2g"),"rg_results_test"))
 save_path <- system.file("extdata", "rg_results_test",package = "pleioh2g") #save_path is the directory where .rds format rg + h2g matrix will be stored.
 
 #replace ld_path and wld_path to your own LD-scores directory path
@@ -92,6 +95,8 @@ data("h2_vector_45D")
 data("Rg_mat_z_45D")
 
 phenotype_path <- system.file("extdata", "Disease45_h2_Z.txt", package = "pleioh2g") # Directory path to the phenotype name and h2z score .txt file - 1st col name: 'traits'; 2nd col namd: 'h2_z'
+dir.create(file.path(system.file("extdata",package = "pleioh2g"),"save_results_test"))
+dir.create(file.path(system.file("extdata/save_results_test",package = "pleioh2g"),"D"))
 save_path <- system.file("extdata", "save_results_test/D",package = "pleioh2g") # Directory where post-corrected pleioh2g results will be stored.
 sample_rep <- 1000 # Monte Carlo sampling iterations in bias correction
 tolerance <- 1e-6 # Default tolerance for binary search in bias correction
