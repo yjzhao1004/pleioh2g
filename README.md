@@ -160,7 +160,7 @@ sample_rep <- 1000 # Monte Carlo sampling iterations in bias correction
 tolerance <- 1e-6 # Default tolerance for binary search in bias correction
 seed <- 123 # Default random seed 
 
-#Specified the directory path to the result using all auxiliary disease categories excluding target disease category - the same target disease as G
+#Specify the directory path to the result using all auxiliary disease categories excluding target disease category - the same target disease as G
 allauxD_T_results_path<-system.file("extdata/save_results_test/D_T", "318_h2pleio_dresults.csv",package = "pleioh2g")
 
 pleiotropyh2_D_T_othersall(G,phenotype_path,save_path,allauxD_T_results_path,h2_vector_45D,h2_vector_mat_45D,Results_full_rg_45D,Results_full_rg_array_45D,Rg_mat_z_45D,sample_rep,tolerance,seed)
