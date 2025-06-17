@@ -16,6 +16,7 @@ We estimate h<SUP>2</SUP><SUB>pleio</SUB> from GWAS summary statistics by estima
 ```>
 install.packages("devtools")
 devtools::install_github("yjzhao1004/pleioh2g")
+library(pleioh2g)
 ```
 ### **Data Preparation**
 Our method uses multiple-trait GWAS summary statistics as input and computes genetic correlation by cross-trait LDSC (Bulik-Sullivan et al. 2015b *Nat Genet*)
