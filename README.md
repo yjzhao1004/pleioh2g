@@ -47,9 +47,10 @@ G = 1 # Index of target disease in trait list - this example is to compute pleio
 # Input ldsc format .sumstat.gz data
 munged_sumstats = list("401.1" = sumstats_munged_example_input(example = "401.1"), "250.2" = sumstats_munged_example_input(example = "250.2"),"296.22" = sumstats_munged_example_input(example = "296.22"))
 
-# Specify reference LD data: ld and wld path
+# Specify reference LD data: ld and wld path; and hapmap 3 SNPs list
 ld_path<-fs::path(fs::path_package("extdata/eur_w_ld_chr", package = "pleioh2g"))
 wld_path<-fs::path(fs::path_package("extdata/eur_w_ld_chr", package = "pleioh2g"))
+hmp3<-fs::path(fs::path_package("extdata/w_hm3.snplist", package = "pleioh2g"))
 
 # If you trait is disease phenotype or the other binary trait, specify prevalence to compute the liability-scale heritability; If you don't specify this, it will compute observed-scale heritability.
 sample_prev <- c(0.37,0.1,0.14)
