@@ -6,7 +6,7 @@ See Figure 1 in manuscript:
 ![image](https://github.com/user-attachments/assets/f7424522-f1ba-4312-9db6-e10b2e8e47a1)
 
 
-The total phenotypic variance of the target disease consists of genetic variance (G) and environmental variance (E). The genetic variance of the target disease is partitioned into a disease-specific component and a pleiotropic component. The disease-specific component is not shared with the auxiliary diseases, and the pleiotropic component consists of a linear combination of the genetic values (G<SUP>1</SUP>, G<SUP>2</SUP>, …, G<SUP>n</SUP>) for auxiliary diseases 1 to n.
+The total phenotypic variance of the target disease consists of genetic variance (G) and environmental variance (E). The genetic variance of the target disease is partitioned into a disease-specific component and a pleiotropic component. The disease-specific component is not shared with the auxiliary diseases, and the pleiotropic component consists of a linear combination of the genetic values (G<SUB>1</SUB>, G<SUB>2</SUB>, …, G<SUB>n</SUB>) for auxiliary diseases 1 to n.
 
 We define **pleiotropic heritability h<SUP>2</SUP><SUB>pleio</SUB>** as the liability-scale genetic variance (estimated from SNPs) of a target disease that is shared with a specific set of auxiliary diseases. 
 ## **PHBC**
