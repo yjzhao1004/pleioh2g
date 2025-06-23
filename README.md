@@ -96,9 +96,3 @@ You can obtain a result list `post_correction_results` containing the following 
     * If you perform analyses excluding target disease category and one other specified category, you need to first perform analyses using all auxiliary diseases excluding target disease category and remove the auxiliary diseases in the specified category from `post_correction_results$selected_auxD`.Then use the remain auxiliary diseases to update the input parameters `phenotype` and `munged_sumstats` and rerun step 2, because the pruning begins at the actual auxiliary diseases using in last-step analyses.
 
 * If you only want to compute the pleiotropic heritability without the specified categories or pleiotropic heritability with respect to specified auxiliary diseases/traits, you can specify them in the input parameters `phenotype` and `munged_sumstats` in step 2.
-
-
-pleiotropyh2_D_T_othersall(G,phenotype_path,save_path,allauxD_T_results_path,h2_vector_45D,h2_vector_mat_45D,Results_full_rg_45D,Results_full_rg_array_45D,Rg_mat_z_45D,sample_rep,tolerance,seed)
-```
-You can also obtain the similar result outputs in Step 4.
-
