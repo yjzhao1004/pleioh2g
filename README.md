@@ -34,7 +34,7 @@ library(pleioh2g)
 munged_sumstats = list("401.1" = sumstats_munged_example_input(example = "401.1"), "250.2" = sumstats_munged_example_input(example = "250.2"),"296.22" = sumstats_munged_example_input(example = "296.22"))
 ```
 ### Step 2: Compute pleiotropic heritability with bias correction
-**pruning_pleioh2g_wrapper.R** is to compute h<SUP>2</SUP><SUB>pleio</SUB> / h<SUP>2</SUP> while performing pruning and bias correction.
+**pruning_pleioh2g_wrapper.R** is to compute h<SUP>2</SUP><SUB>pleio</SUB> / h<SUP>2</SUP> while performing pruning and bias correction with ldsc-format GWAS summary statistics (.sumstat.gz) as input.
 
 * We note that h<SUP>2</SUP><SUB>pleio</SUB> is a function of both the target disease and the selected set of auxiliary diseases/traits. We use the ratio of pleiotropic heritability vs. total heritability (h<SUP>2</SUP><SUB>pleio</SUB> / h<SUP>2</SUP>) to quantify the proportion of genetic variance that is pleiotropic.
 
