@@ -15,7 +15,7 @@
 #' @importFrom stats sd
 #' @importFrom utils write.csv
 #' @return A `list` containing the following elements:
-#'   - `target_disease` (character): The value "401.1".
+#'   - `target_disease` (character): The value "318".
 #'   - `target_disease_h2_est` (numeric): target disease h2g.
 #'   - `target_disease_h2_se` (numeric): target disease h2g_se.
 #'   - `selected_pleio_pheno` (character): auxiliary diseases.
