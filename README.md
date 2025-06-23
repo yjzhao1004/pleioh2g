@@ -10,7 +10,7 @@ The total phenotypic variance of the target disease consists of genetic variance
 
 We define **pleiotropic heritability h<SUP>2</SUP><SUB>pleio</SUB>** as the liability-scale genetic variance (estimated from SNPs) of a target disease that is shared with a specific set of auxiliary diseases. 
 ## **PHBC**
-We estimate h<SUP>2</SUP><SUB>pleio</SUB> from GWAS summary statistics by estimating the proportion of variance explained from an estimated genetic correlation matrix and employing a Monte-Carlo bias correction procedure to account for sampling noise in genetic correlation estimates. 
+Our method uses multiple-trait GWAS summary statistics as input. We estimate h<SUP>2</SUP><SUB>pleio</SUB> from GWAS summary statistics by estimating the proportion of variance explained from an estimated genetic correlation matrix and employing a Monte-Carlo bias correction procedure to account for sampling noise in genetic correlation estimates. 
 
 ### **Installation**:
 ```>
@@ -19,7 +19,6 @@ devtools::install_github("yjzhao1004/pleioh2g")
 library(pleioh2g)
 ```
 ### **Data Preparation**
-Our method uses multiple-trait GWAS summary statistics as input and computes genetic correlation by cross-trait LDSC (Bulik-Sullivan et al. 2015b *Nat Genet*)
 * We used 1000 Genomes Project Europeans as a reference LD panel to estimate genetic correlation. 1000G European LD-scores and HapMap 3 SNPs list are available at https://data.broadinstitute.org/alkesgroup/LDSCORE.
 * Summary association statistics (LDSC format .sumstat.gz) for all diseases/traits analyzed in this study are available at https://alkesgroup.broadinstitute.org/PHBC/.
 
