@@ -90,9 +90,12 @@ You can obtain a result list `post_correction_results` containing the following 
 
 
 ### Leave-category-out analysis instruction  
-
-* We note that our leave-category-out analysis need to use interactively dependent auxiliary diseases sets because we want to compare the reduction of pleiotropic heritability from each category removal.     
-    * If you perform analyses excluding target disease category or any one category, you need to first perform analyses using all auxiliary diseases and remove the auxiliary diseases in the specified category from `post_correction_results$selected_auxD`. Then use the remain auxiliary diseases to update the input parameters `phenotype` and `munged_sumstats` and rerun step 2, because the pruning begins at the actual auxiliary diseases using in last-step analyses.
-    * If you perform analyses excluding target disease category and one other specified category, you need to first perform analyses using all auxiliary diseases excluding target disease category and remove the auxiliary diseases in the specified category from `post_correction_results$selected_auxD`.Then use the remain auxiliary diseases to update the input parameters `phenotype` and `munged_sumstats` and rerun step 2, because the pruning begins at the actual auxiliary diseases using in last-step analyses.
-
-* If you only want to compute the pleiotropic heritability without the specified categories or pleiotropic heritability with respect to specified auxiliary diseases/traits, you can specify them in the input parameters `phenotype` and `munged_sumstats` in step 2.
+* If you want to compute the pleiotropic heritability without the specified categories or pleiotropic heritability with respect to specified auxiliary diseases/traits, you can specify them in the input parameters `phenotype` and `munged_sumstats` in step 2.
+* If you want to estimate the contribution of a subset of the auxiliary categories/diseases, you need to be cautious because there is a pruning procedure. Here is our recommended procedure:
+    * If you perform analyses excluding target disease category or any one category:
+     * First perform analyses using all auxiliary diseases and then remove the auxiliary diseases in the specified category from `post_correction_results$selected_auxD`.
+     * Update the input parameters `phenotype` and `munged_sumstats` with the remaining auxiliary diseases and rerun step 2.
+    * If you perform analyses excluding target disease category and one other specified category:
+     * First perform analyses using all auxiliary diseases excluding target disease category and then remove the auxiliary diseases in the specified category from `post_correction_results$selected_auxD`.
+     * Update the input parameters `phenotype` and `munged_sumstats` with the remaining auxiliary diseases and rerun step 2.
+    * This procedure will ensure the consistency of pruning with last-step analyses. 
