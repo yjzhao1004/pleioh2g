@@ -93,9 +93,9 @@ You can obtain a result list `post_correction_results` containing the following 
 * If you want to compute the pleiotropic heritability without the specified categories or pleiotropic heritability with respect to specified auxiliary diseases/traits, you can specify them in the input parameters `phenotype` and `munged_sumstats` in step 2.
 * If you want to estimate the contribution of a subset of the auxiliary categories/diseases, you need to be cautious because there is a pruning procedure. Here is our recommended procedure:
     * If you perform analyses excluding target disease category or any one category:
-     * First perform analyses using all auxiliary diseases and then remove the auxiliary diseases in the specified category from `post_correction_results$selected_auxD`.
-     * Update the input parameters `phenotype` and `munged_sumstats` with the remaining auxiliary diseases and rerun step 2.
+         * First perform analyses using all auxiliary diseases and then remove the auxiliary diseases in the specified category from `post_correction_results$selected_auxD`.
+         * Update the input parameters `phenotype` and `munged_sumstats` with the remaining auxiliary diseases and rerun step 2.
     * If you perform analyses excluding target disease category and one other specified category:
-     * First perform analyses using all auxiliary diseases excluding target disease category and then remove the auxiliary diseases in the specified category from `post_correction_results$selected_auxD`.
-     * Update the input parameters `phenotype` and `munged_sumstats` with the remaining auxiliary diseases and rerun step 2.
+         * First perform analyses using all auxiliary diseases excluding target disease category and then remove the auxiliary diseases in the specified category from `post_correction_results$selected_auxD`.
+         * Update the input parameters `phenotype` and `munged_sumstats` with the remaining auxiliary diseases and rerun step 2.
     * This procedure will ensure the consistency of pruning with last-step analyses. 
