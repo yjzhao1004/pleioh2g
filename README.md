@@ -91,7 +91,7 @@ You can obtain a result list `post_correction_results` containing the following 
 
 
 ### Leave-category-out analysis instruction  
-* If you want to compute the pleiotropic heritability without the specified categories or pleiotropic heritability with respect to specified auxiliary diseases/traits, you can specify them in the input parameters `phenotype` and `munged_sumstats` in step 2.
+* If you want to compute pleiotropic heritability with respect to a subset of auxiliary disease, you can just specify the subset as the auxiliary disease and repeat step 1 and 2
 * If you want to estimate the contribution of a subset of the auxiliary categories/diseases, you need to be cautious because there is a pruning procedure. Here is our recommended procedure:
     * If you perform analyses excluding target disease category or any one category:
          * First perform analyses using all auxiliary diseases and then remove the auxiliary diseases in the specified category from `post_correction_results$selected_auxD`.
