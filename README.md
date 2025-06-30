@@ -33,7 +33,7 @@ library(pleioh2g)
 munged_sumstats = list("401.1" = sumstats_munged_example_input(example = "401.1"), "250.2" = sumstats_munged_example_input(example = "250.2"),"296.22" = sumstats_munged_example_input(example = "296.22"))
 ```
 ### Step 2: Compute pleiotropic heritability with bias correction
-The function **pruning_pleioh2g_wrapper(G,phenotype,munged_sumstats,ld_path, wld_path, sample_prev, population_prev,n_block, hmp3,sample_rep,tolerance,seed)** is to compute h<SUP>2</SUP><SUB>pleio</SUB> / h<SUP>2</SUP> while performing pruning and bias correction with ldsc-format GWAS summary statistics (.sumstat.gz) as input.
+The function **pruning_pleioh2g_wrapper()** (See example as below) is to compute h<SUP>2</SUP><SUB>pleio</SUB> / h<SUP>2</SUP> while performing pruning and bias correction with ldsc-format GWAS summary statistics (.sumstat.gz) as input.
 
 * We note that h<SUP>2</SUP><SUB>pleio</SUB> is a function of both the target disease and the selected set of auxiliary diseases/traits. We use the ratio of pleiotropic heritability vs. total heritability (h<SUP>2</SUP><SUB>pleio</SUB> / h<SUP>2</SUP>) to quantify the proportion of genetic variance that is pleiotropic.
 * We just use 5 jackknife blocks and 3 traits as example for quick computation test. If you set 200 jackknife blocks and include more than 50 traits, the procedure will cost more than 10 hours.
