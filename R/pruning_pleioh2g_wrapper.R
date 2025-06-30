@@ -431,7 +431,7 @@ pruning_pleioh2g_wrapper<-function(G,phenotype,munged_sumstats,ld_path, wld_path
       })
     })
   })
-  cat("post-correction h2pleio/h2 for ", current_D, "is ", postcorrresults$percentage_h2pleio_corr," (s.e. ",postcorrresults$percentage_h2pleio_corr_se,")"  "\n")
+  cat("post-correction h2pleio/h2 for ", current_D, "is ", postcorrresults$percentage_h2pleio_corr," (s.e. ",postcorrresults$percentage_h2pleio_corr_se,")" )
   
   return(postcorrresults)
 }
