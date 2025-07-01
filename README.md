@@ -71,17 +71,16 @@ seed <- 123
 
 post_correction_results<-pruning_pleioh2g_wrapper(G,phenotype,munged_sumstats,ld_path, wld_path, sample_prev, population_prev,n_block, hmp3,sample_rep,tolerance,seed)
 ```
-You can obtain a result list `post_correction_results` containing the following elements:
-
+An output line will provide your post-correction h<SUP>2</SUP><SUB>pleio</SUB> / h<SUP>2</SUP> estimate, along with a result list `post_correction_results`, containing the following elements：
   - `target_disease` (character): The value "401.1".
   - `target_disease_h2_est` (numeric): target disease h<SUP>2</SUP>.
   - `target_disease_h2_se` (numeric): target disease h<SUP>2</SUP> s.e..
   - `selected_auxD` (character): auxiliary diseases.
-  - `h2pleio` (numeric): h<SUP>2</SUP><SUB>pleio</SUB> estimate.
-  - `h2pleio_se` (numeric): h<SUP>2</SUP><SUB>pleio</SUB> jackknife s.e. estimate.
-  - `percentage_h2pleio` (numeric): h<SUP>2</SUP><SUB>pleio</SUB> / h<SUP>2</SUP> estimate.
-  - `percentage_h2pleio_se` (numeric): h<SUP>2</SUP><SUB>pleio</SUB> / h<SUP>2</SUP> jackknife s.e. estimate.
-  - `percentage_h2pleio_jackknife` (numeric): vector of all h<SUP>2</SUP><SUB>pleio</SUB> / h<SUP>2</SUP> jackknife estimates in default 200 blocks.
+  - `h2pleio_uncorr` (numeric): pre-correction h<SUP>2</SUP><SUB>pleio</SUB> estimate.
+  - `h2pleio_uncorr_se` (numeric): pre-correction h<SUP>2</SUP><SUB>pleio</SUB> jackknife s.e. estimate.
+  - `percentage_h2pleio_uncorr` (numeric): pre-correction h<SUP>2</SUP><SUB>pleio</SUB> / h<SUP>2</SUP> estimate.
+  - `percentage_h2pleio_uncorr_se` (numeric): pre-correction h<SUP>2</SUP><SUB>pleio</SUB> / h<SUP>2</SUP> jackknife s.e. estimate.
+  - `percentage_h2pleio_jackknife_uncorr` (numeric): vector of all pre-correction h<SUP>2</SUP><SUB>pleio</SUB> / h<SUP>2</SUP> jackknife estimates in default 200 blocks.
   - `h2pleio_corr` (numeric): post-correction h<SUP>2</SUP><SUB>pleio</SUB> estimate.
   - `h2pleio_corr_se` (numeric): post-correction h<SUP>2</SUP><SUB>pleio</SUB> jackknife s.e. estimate.
   - `percentage_h2pleio_corr` (numeric): post-correction h<SUP>2</SUP><SUB>pleio</SUB> / h<SUP>2</SUP> estimate.
