@@ -12,6 +12,9 @@ We define **pleiotropic heritability h<SUP>2</SUP><SUB>pleio</SUB>** as the liab
 ## **PHBC**
 Our method uses multiple-trait GWAS summary statistics as input. We estimate h<SUP>2</SUP><SUB>pleio</SUB> from GWAS summary statistics by estimating the proportion of variance explained from an estimated genetic correlation matrix and employing a Monte-Carlo bias correction procedure to account for sampling noise in genetic correlation estimates. 
 
+For bug reports, please email: yujiezhao@hsph.harvard.edu.
+
+
 ### **Installation**:
 ```>
 install.packages("devtools")
