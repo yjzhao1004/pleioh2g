@@ -54,6 +54,7 @@ generate_proposal_sample_changea_cor <- function(Results_full_rg, Results_full_r
       noisy_inversed_element <- t(sample_a_noise) %*% solve(sample_rgsolve_noise) %*% sample_a_noise
       return(noisy_inversed_element)
     }
+    iter=iter+1
   }
 }
 
