@@ -71,13 +71,7 @@ n_block<-5
 # Specify number of Monte Carlo sampling iterations in bias correction; If you don't specify this, the default number is 1000.
 sample_rep <- 1000 
 
-# Specify tolerance for binary search in bias correction; If you don't specify this, the default tolerance is 1e-6.
-tolerance <- 1e-6 
-
-# Specify random seed for Monte Carlo sampling iterations in bias correction; If you don't specify this, the default seed is 123.
-seed <- 123 
-
-post_correction_results<-pruning_pleioh2g_wrapper(G,phenotype,munged_sumstats,ld_path, wld_path, sample_prev, population_prev,n_block, hmp3,sample_rep,tolerance,seed)
+post_correction_results<-pruning_pleioh2g_wrapper(G,phenotype,munged_sumstats,ld_path, wld_path, sample_prev, population_prev,n_block, hmp3,sample_rep)
 ```
 An output line will provide your post-correction h<SUP>2</SUP><SUB>pleio</SUB> / h<SUP>2</SUP> estimate, along with a result list `post_correction_results`, containing the following elements：
   - `target_disease` (character): The value "401.1".
