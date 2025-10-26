@@ -1,0 +1,397 @@
+#' Estimate cross-trait genetic correlations (Robust Version) - refer to ldscr R package (https://github.com/mglev1n/ldscr)
+#'
+#' @description
+#'
+#' `ldsc_rg()` uses ldscore regression to estimate the pairwise genetic correlations between traits. The function relies on named lists of traits, sample prevalences, and population prevalences. The name of each trait should be consistent across each argument.
+#'
+#' @details
+#' This function estimates the pairwise genetic correlations between an arbitrary number of traits. The function also estimates heritability for each individual trait. There is a [ggplot2::autoplot()] method for visualizing a heatmap of the results.
+#'
+#' This version handles cases where traits have non-positive heritability estimates more gracefully by returning NA values for correlations involving such traits.
+#'
+#' @param munged_sumstats (list) A named list of dataframes, or paths to files containing munged summary statistics. Each set of munged summary statistics contain at least columns named `SNP` (rsid), `A1` (effect allele), `A2` (non-effect allele), `N` (total sample size) and `Z` (Z-score)
+#' @param sample_prev (list) A named list containing the prevalence of cases in the current sample, used for conversion from observed heritability to liability-scale heritability. The default is `NA`, which is appropriate for quantitative traits or estimating heritability on the observed scale.
+#' @param population_prev (list) A named list containing the population prevalence of the trait, used for conversion from observed heritability to liability-scale heritability. The default is `NA`, which is appropriate for quantitative traits or estimating heritability on the observed scale.
+#' @param ld (character) Path to directory containing ld score files, ending in `*.l2.ldscore.gz`.
+#' @param wld (character) Path to directory containing weight files.
+#' @param n_blocks (numeric) Number of blocks used to produce block jackknife standard errors. Default is `200`
+#' @param chisq_max (numeric) Maximum value of Z^2 for SNPs to be included in LD-score regression. Default is to set `chisq_max` to the maximum of 80 and N*0.001.
+#' @param chr_filter (numeric vector) Chromosomes to include in analysis. Separating even/odd chromosomes may be useful for exploratory/confirmatory factor analysis.
+#'
+#' @return A list of class `ldscr_list` containing heritablilty and genetic correlation information
+#'  - `h2` = [tibble][tibble::tibble-package] containing heritability information for each trait. If `sample_prev` and `population_prev` were provided, the heritability estimates will also be returned on the liability scale.
+#'  - `rg` = [tibble][tibble::tibble-package] containing pairwise genetic correlations information.
+#'  - `raw` = A list of correlation/covariance matrices
+#'
+#' @export
+#'
+#' @import dtplyr
+#' @import data.table
+
+ldsc_rg <- function(munged_sumstats, sample_prev = NA, population_prev = NA, ld, wld, n_blocks = 200, chisq_max = NA, chr_filter = seq(1, 22, 1)) {
+  # Check function arguments
+
+    cli::cli_progress_step("Checking for user-specified `ld` and `wld`")
+    checkmate::assert_directory_exists(ld)
+    checkmate::assert_directory_exists(wld)
+
+  checkmate::assert_list(munged_sumstats)
+
+  if (missing(sample_prev)) {
+    cli::cli_alert_info("No sample prevalence data provided. Estimating heritabilities on the observed scale.")
+  }
+
+  checkmate::assert_number(n_blocks)
+  n.blocks <- n_blocks
+
+  # Dimensions
+  n.traits <- length(munged_sumstats)
+  n.V <- n.traits * (n.traits + 1) / 2
+
+  # Set number of blocks
+  if (n.traits > 18) {
+    n.blocks <- (((n.traits + 1) * (n.traits + 2)) / 2) + 1
+    cli::cli_alert_info("Setting the number of blocks used to perform the block jacknife used to estimate the sampling covariance matrix (V) to {n.blocks}")
+    if (n.blocks > 1000) {
+      cli_alert_warning("The number of blocks needed to estimate V is > 1000, which may result in sampling dependencies across the blocks used to estimate standard errors and can bias results.")
+    }
+  }
+
+  # Storage:
+  cov <- matrix(NA, nrow = n.traits, ncol = n.traits)
+  V.hold <- matrix(NA, nrow = n.blocks, ncol = n.V)
+  N.vec <- matrix(NA, nrow = 1, ncol = n.V)
+  Liab.S <- rep(1, n.traits)
+  I <- matrix(NA, nrow = n.traits, ncol = n.traits)
+  h2_res <- tibble::tibble()
+
+  # READ LD SCORES:
+  cli::cli_progress_step("Reading LD Scores")
+  x <- read_ld(ld)
+  x$CM <- x$MAF <- NULL
+
+
+  # READ weights:
+  cli::cli_progress_step("Reading weights")
+  w <- read_wld(wld)
+  w$CM <- w$MAF <- NULL
+  colnames(w)[ncol(w)] <- "wLD"
+
+
+  # READ M
+  cli::cli_progress_step("Reading M")
+  m <- read_m(ld)
+  M.tot <- sum(m)
+  m <- M.tot
+
+  cli::cli_progress_step("Reading summary statistics")
+  # READ summary statistics
+
+  all_y <- purrr::imap(munged_sumstats, ~ {
+    if (is.character(.x)) {
+      cli::cli_progress_step("Reading summary statistics for '{.y}' from {.x}")
+      sumstats_df <- vroom::vroom(.x, col_types = vroom::cols())
+    } else {
+      cli::cli_progress_step("Reading summary statistics for '{.y}' from dataframe")
+      sumstats_df <- .x
+    }
+
+    # sumstats_df <- na.omit(sumstats_df)
+
+    cli::cli_progress_step("Merging '{.y}' with LD-score files")
+    merged <- merge_sumstats(sumstats_df, w, x, chr_filter)
+
+    cli::cli_alert_info(glue::glue("{nrow(merged)}/{nrow(sumstats_df)} SNPs remain after merging '{.y}' with LD-score files"))
+
+    ## REMOVE SNPS with excess chi-square:
+    if (is.na(chisq_max)) {
+      chisq_max <- max(0.001 * max(merged$N), 80)
+    }
+    rm <- (merged$Z^2 > chisq_max)
+    merged <- merged[!rm, ]
+
+    cli::cli_alert_info(glue::glue("Removed {sum(rm)} SNPs with Chi^2 > {chisq_max} from '{.y}'; {nrow(merged)} SNPs remain"))
+
+    return(merged)
+  })
+
+  # count the total nummer of runs, both loops
+  s <- 1
+
+  for (j in 1:n.traits) {
+    # chi1 <- traits[j]
+
+    y1 <- all_y[[j]]
+    y1$chi1 <- y1$Z^2
+
+    for (k in j:n.traits) {
+      ##### HERITABILITY code
+      if (j == k) {
+        trait <- names(munged_sumstats[j])
+        cli::cli_progress_step("Estimating heritability for '{trait}'")
+
+        samp.prev <- sample_prev[j]
+        pop.prev <- population_prev[j]
+
+        merged <- y1
+        n.snps <- nrow(merged)
+
+        ## ADD INTERCEPT:
+        merged$intercept <- 1
+        merged$x.tot <- merged$L2
+        merged$x.tot.intercept <- 1
+
+        initial.w <- make_weights(chi1 = merged$chi1, L2 = merged$L2, wLD = merged$wLD, N = merged$N, M.tot)
+
+        merged$weights <- initial.w / sum(initial.w)
+
+        N.bar <- mean(merged$N)
+
+        ## preweight LD and chi:
+        weighted.LD <- as.matrix(cbind(merged$L2, merged$intercept) * merged$weights)
+        weighted.chi <- as.matrix(merged$chi1 * merged$weights)
+
+        ## Perform analysis:
+        analysis_res <- perform_analysis(n.blocks, n.snps, weighted.LD, weighted.chi, N.bar, m)
+
+        V.hold[, s] <- analysis_res$pseudo.values
+        N.vec[1, s] <- analysis_res$N.bar
+
+        lambda.gc <- median(merged$chi1) / qchisq(0.5, df = 1)
+        mean.Chi <- mean(merged$chi1)
+        ratio <- (analysis_res$intercept - 1) / (mean.Chi - 1)
+        ratio.se <- analysis_res$intercept.se / (mean.Chi - 1)
+
+        if (is.na(population_prev) == F & is.na(sample_prev) == F) {
+          # conversion.factor <- (population_prev^2 * (1 - population_prev)^2) / (sample_prev * (1 - sample_prev) * dnorm(qnorm(1 - population_prev))^2)
+          # Liab.S <- conversion.factor
+          h2_lia <- h2_liability(h2 = analysis_res$reg.tot, sample_prev, population_prev)
+
+          h2_res <- h2_res %>%
+            dplyr::bind_rows(
+              tibble::tibble(
+                trait = trait,
+                mean_chisq = mean.Chi,
+                lambda_gc = lambda.gc,
+                intercept = analysis_res$intercept,
+                intercept_se = analysis_res$intercept.se,
+                ratio = ratio,
+                ratio_se = ratio.se,
+                h2_observed = analysis_res$reg.tot,
+                h2_observed_se = analysis_res$tot.se,
+                h2_Z = analysis_res$reg.tot / analysis_res$tot.se,
+                h2_p = 2 * pnorm(abs(h2_Z), lower.tail = FALSE),
+                h2_liability = h2_lia,
+                h2_liability_se = h2_lia / h2_Z
+              )
+            )
+        } else {
+          h2_res <- h2_res %>%
+            dplyr::bind_rows(
+              tibble::tibble(
+                trait = trait,
+                mean_chisq = mean.Chi,
+                lambda_gc = lambda.gc,
+                intercept = analysis_res$intercept,
+                intercept_se = analysis_res$intercept.se,
+                ratio = ratio,
+                ratio_se = ratio.se,
+                h2_observed = analysis_res$reg.tot,
+                h2_observed_se = analysis_res$tot.se,
+                h2_Z = analysis_res$reg.tot / analysis_res$tot.se,
+                h2_p = 2 * pnorm(abs(h2_Z), lower.tail = FALSE)
+              )
+            )
+        }
+
+        cov[j, j] <- analysis_res$reg.tot
+        I[j, j] <- analysis_res$intercept
+      }
+
+
+      ##### GENETIC COVARIANCE code
+
+      if (j != k) {
+        trait1 <- names(munged_sumstats[j])
+        trait2 <- names(munged_sumstats[k])
+        cli::cli_progress_step("Estimating genetic covariance for for '{trait1}' and '{trait2}'")
+
+        # Reuse the data read in for heritability
+        y2 <- all_y[[k]]
+        y <- merge(y1, y2[, c("SNP", "N", "Z", "A1")], by = "SNP", sort = FALSE)
+
+        y$Z.x <- ifelse(y$A1.y == y$A1.x, y$Z.x, -y$Z.x)
+        y$ZZ <- y$Z.y * y$Z.x
+        y$chi2 <- y$Z.y^2
+        merged <- na.omit(y)
+        n.snps <- nrow(merged)
+
+        ## ADD INTERCEPT:
+        merged$intercept <- 1
+        merged$x.tot <- merged$L2
+        merged$x.tot.intercept <- 1
+
+
+        #### MAKE WEIGHTS:
+        initial.w <- make_weights(chi1 = merged$chi1, L2 = merged$L2, wLD = merged$wLD, N = merged$N.x, M.tot)
+        initial.w2 <- make_weights(chi1 = merged$chi2, L2 = merged$L2, wLD = merged$wLD, N = merged$N.y, M.tot)
+
+        merged$weights_cov <- (initial.w + initial.w2) / sum(initial.w + initial.w2)
+
+        N.bar <- sqrt(mean(merged$N.x) * mean(merged$N.y))
+
+        ## preweight LD and chi:
+
+        weighted.LD <- as.matrix(cbind(merged$L2, merged$intercept) * merged$weights)
+        weighted.chi <- as.matrix(merged$ZZ * merged$weights_cov)
+
+        ## Perform analysis:
+        covariance_res <- perform_analysis(n.blocks, n.snps, weighted.LD, weighted.chi, N.bar, m)
+
+        V.hold[, s] <- covariance_res$pseudo.values
+        N.vec[1, s] <- covariance_res$N.bar
+
+        cov[k, j] <- cov[j, k] <- covariance_res$reg.tot
+        I[k, j] <- I[j, k] <- covariance_res$intercept
+      }
+
+      ### Total count
+      s <- s + 1
+    }
+  }
+
+
+  ## Scale V to N per study (assume m constant)
+  # /!\ crossprod instead of tcrossprod because N.vec is a one-row matrix
+  v.out <- cov(V.hold) / crossprod(N.vec * (sqrt(n.blocks) / m))
+
+  ### Scale S and V to liability:
+  ratio <- tcrossprod(sqrt(Liab.S))
+  S <- cov * ratio
+
+  # calculate the ratio of the rescaled and original S matrices
+  scaleO <- gdata::lowerTriangle(ratio, diag = TRUE)
+
+  # rescale the sampling correlation matrix by the appropriate diagonals
+  V <- v.out * tcrossprod(scaleO)
+
+
+  # name traits according to the names of the input summart statistics
+  # use general format of V1-VX if no names provided
+  colnames(S) <- if (is.null(names(munged_sumstats))) paste0("V", 1:ncol(S)) else names(munged_sumstats)
+  rownames(S) <- if (is.null(names(munged_sumstats))) paste0("V", 1:ncol(S)) else names(munged_sumstats)
+
+  if (mean(Liab.S) != 1) {
+    r <- nrow(S)
+    SE <- matrix(0, r, r)
+    SE[lower.tri(SE, diag = TRUE)] <- sqrt(diag(V))
+
+    colnames(SE) <- colnames(S)
+    rownames(SE) <- rownames(S)
+  }
+
+  ## ROBUST HANDLING OF NON-POSITIVE HERITABILITIES
+  # Initialize matrices
+  r <- nrow(S)
+  S_Stand <- matrix(NA, r, r)
+  SE_Stand <- matrix(NA, r, r)
+  V_Stand <- matrix(NA, nrow(V), ncol(V))
+
+  # Set row and column names
+  colnames(S_Stand) <- colnames(S)
+  rownames(S_Stand) <- rownames(S)
+  colnames(SE_Stand) <- colnames(S)
+  rownames(SE_Stand) <- rownames(S)
+
+  # Identify traits with positive heritability
+  positive_h2 <- diag(S) > 0
+
+  if (all(positive_h2)) {
+    cli::cli_alert_success("All traits have positive heritability estimates")
+
+    ## calculate standardized results to print genetic correlations to log and screen
+    ratio <- tcrossprod(1 / sqrt(diag(S)))
+    S_Stand <- S * ratio
+
+    # calculate the ratio of the rescaled and original S matrices
+    scaleO <- gdata::lowerTriangle(ratio, diag = TRUE)
+
+    # rescale the sampling correlation matrix by the appropriate diagonals
+    V_Stand <- V * tcrossprod(scaleO)
+
+    # enter SEs from diagonal of standardized V
+    SE_Stand <- matrix(0, r, r)
+    SE_Stand[lower.tri(SE_Stand, diag = TRUE)] <- sqrt(diag(V_Stand))
+
+    colnames(SE_Stand) <- colnames(S)
+    rownames(SE_Stand) <- rownames(S)
+  } else {
+    # Handle case where some traits have non-positive heritability
+    non_positive_traits <- names(munged_sumstats)[!positive_h2]
+    cli::cli_alert_warning("Traits with non-positive heritability detected: {paste(non_positive_traits, collapse = ', ')}")
+    cli::cli_alert_info("Setting correlations involving these traits to NA")
+
+    # Set diagonal elements
+    diag(S_Stand) <- ifelse(positive_h2, 1, NA)
+    diag(SE_Stand) <- ifelse(positive_h2, 0, NA)
+
+    # Handle off-diagonal elements
+    for (i in 1:r) {
+      for (j in 1:r) {
+        if (i != j) {
+          if (positive_h2[i] && positive_h2[j]) {
+            # Both traits have positive heritability - calculate correlation
+            S_Stand[i, j] <- S[i, j] / sqrt(S[i, i] * S[j, j])
+
+            # Calculate SE using delta method approximation
+            # SE(rg) ≈ SE(cov) / sqrt(h2_i * h2_j) for small SEs
+            cov_index <- which(lower.tri(S, diag = TRUE), arr.ind = TRUE)
+            i_diag_idx <- which(cov_index[, 1] == i & cov_index[, 2] == i)
+            j_diag_idx <- which(cov_index[, 1] == j & cov_index[, 2] == j)
+
+            if (i < j) {
+              ij_idx <- which(cov_index[, 1] == j & cov_index[, 2] == i)
+            } else {
+              ij_idx <- which(cov_index[, 1] == i & cov_index[, 2] == j)
+            }
+
+            if (length(ij_idx) > 0 && length(i_diag_idx) > 0 && length(j_diag_idx) > 0) {
+              var_cov <- V[ij_idx, ij_idx]
+              SE_Stand[i, j] <- sqrt(var_cov) / sqrt(S[i, i] * S[j, j])
+            } else {
+              SE_Stand[i, j] <- NA
+            }
+          } else {
+            # At least one trait has non-positive heritability
+            S_Stand[i, j] <- NA
+            SE_Stand[i, j] <- NA
+          }
+        }
+      }
+    }
+  }
+
+  # Create results tibble with robust handling
+  ind <- which(lower.tri(S, diag = F), arr.ind = TRUE)
+
+  rg_res <- tibble::tibble(
+    trait1 = dimnames(S_Stand)[[2]][ind[, 2]],
+    trait2 = dimnames(S_Stand)[[1]][ind[, 1]],
+    rg = S_Stand[ind],
+    rg_se = SE_Stand[ind],
+    rg_p = ifelse(is.na(S_Stand[ind]) | is.na(SE_Stand[ind]),
+                  NA,
+                  2 * pnorm(abs(S_Stand[ind] / SE_Stand[ind]), lower.tail = FALSE)
+    )
+  )
+
+  output <- list(
+    h2 = h2_res,
+    rg = rg_res,
+    raw = list(V = V, S = S, I = I, N = N.vec, m = m, V_Stand = V_Stand, S_Stand = S_Stand, SE_Stand = SE_Stand)
+  )
+
+  class(output) <- c("ldscr_list", "list")
+
+  return(output)
+}
