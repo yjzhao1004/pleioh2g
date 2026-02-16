@@ -84,9 +84,9 @@ An output line will provide your post-correction h<SUP>2</SUP><SUB>pleio</SUB> /
   - `percentage_h2pleio_uncorr_se` (numeric): pre-correction h<SUP>2</SUP><SUB>pleio</SUB> / h<SUP>2</SUP> jackknife s.e. estimate.
   - `percentage_h2pleio_jackknife_uncorr` (numeric): vector of all pre-correction h<SUP>2</SUP><SUB>pleio</SUB> / h<SUP>2</SUP> jackknife estimates in default 200 blocks.
   - `h2pleio_corr` (numeric): post-correction h<SUP>2</SUP><SUB>pleio</SUB> estimate.
-  - `h2pleio_corr_se` (numeric): post-correction h<SUP>2</SUP><SUB>pleio</SUB> jackknife s.e. estimate.
   - `percentage_h2pleio_corr` (numeric): post-correction h<SUP>2</SUP><SUB>pleio</SUB> / h<SUP>2</SUP> estimate.
   - `percentage_h2pleio_corr_se` (numeric): post-correction h<SUP>2</SUP><SUB>pleio</SUB> / h<SUP>2</SUP> jackknife s.e. estimate.
+  - `percentage_h2pleio_corr_Z` (numeric): post-correction h<SUP>2</SUP><SUB>pleio</SUB> / h<SUP>2</SUP> estimate Z score.
   - `corrected_weight` (numeric): corrected weight ξc in bias correction.
 
 
