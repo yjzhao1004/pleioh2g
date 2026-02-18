@@ -1,0 +1,101 @@
+---
+title: "pleioh2g-tutorial"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{pleioh2g-tutorial}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+```{r setup}
+library(pleioh2g)
+```
+### **Installation**:
+```>
+install.packages("devtools")
+devtools::install_github("yjzhao1004/pleioh2g")
+library(pleioh2g)
+```
+
+### **Steps**
+### Step 1: Prepare LDSC input-format data for multiple traits.
+PHBC needs LDSC .sumstats format data as input, so you first need to reformat the GWAS summary statistics as LDSC requested. We strongly recommend that you use the script munge_sumstats.py included in LDSC python package (https://github.com/bulik/ldsc) to convert your own GWAS summary statistics into LDSC format. (ref. Bulik-Sullivan et al. 2015b *Nat Genet*)
+We also provide all LDSC-format .sumstat.gz data used in our analyses. (See Data preparation)
+* Examples of three phenotypes ("401.1", "250.2", "296.22") have been implemented in our package. You can use codes below to reload them.
+
+```
+library(pleioh2g)
+munged_sumstats = list("401.1" = sumstats_munged_example_input(example = "401.1"), "250.2" = sumstats_munged_example_input(example = "250.2"),"296.22" = sumstats_munged_example_input(example = "296.22"))
+```
+### Step 2: Compute pleiotropic heritability with bias correction
+The function **pruning_pleioh2g_wrapper()** (See example as below) is to compute h<SUP>2</SUP><SUB>pleio</SUB> / h<SUP>2</SUP> while performing pruning and bias correction with ldsc-format GWAS summary statistics (.sumstat.gz) as input.
+
+* We note that h<SUP>2</SUP><SUB>pleio</SUB> is a function of both the target disease and the selected set of auxiliary diseases/traits. We use the ratio of pleiotropic heritability vs. total heritability (h<SUP>2</SUP><SUB>pleio</SUB> / h<SUP>2</SUP>) to quantify the proportion of genetic variance that is pleiotropic.
+* We just use 5 jackknife blocks and 3 traits as example for quick computation test. If you set 200 jackknife blocks and include more than 50 traits, the procedure will cost more than 10 hours.
+
+```
+# Specify phenotype names
+phenotype<-c("401.1","250.2","296.22")
+
+# First to determine which disease in your list is the target disease
+G = 1 # Index of target disease in trait list - this example is to compute pleiotropic heritability for "401.1".
+
+# Input ldsc format .sumstat.gz data
+munged_sumstats = list("401.1" = sumstats_munged_example_input(example = "401.1"), "250.2" = sumstats_munged_example_input(example = "250.2"),"296.22" = sumstats_munged_example_input(example = "296.22"))
+
+# Specify reference LD data: ld and wld path; and hapmap 3 SNPs list
+ld_path<-fs::path(fs::path_package("extdata/eur_w_ld_chr", package = "pleioh2g"))
+wld_path<-fs::path(fs::path_package("extdata/eur_w_ld_chr", package = "pleioh2g"))
+hmp3<-fs::path(fs::path_package("extdata/w_hm3.snplist", package = "pleioh2g"))
+
+# If you trait is disease phenotype or the other binary trait, specify prevalence to compute the liability-scale heritability; If you don't specify this, it will compute observed-scale heritability.
+sample_prev <- c(0.37,0.1,0.17)
+population_prev <- c(0.37,0.1,0.17)
+
+# Specify number of genomic-jackknife block; We use n_block = 5 as example for quick computation, but we recommand to use 200 jackknife blocks; If you don't specify this, the default number is 200.
+n_block<-5
+ 
+# Specify number of Monte Carlo sampling iterations in bias correction; If you don't specify this, the default number is 1000.
+sample_rep <- 1000 
+
+post_correction_results<-pruning_pleioh2g_wrapper(G,phenotype,munged_sumstats,ld_path, wld_path, sample_prev, population_prev,n_block, hmp3,sample_rep)
+```
+An output line will provide your post-correction h<SUP>2</SUP><SUB>pleio</SUB> / h<SUP>2</SUP> estimate, along with a result list `post_correction_results`, containing the following elements：
+  - `target_disease` (character): The value "401.1".
+  - `target_disease_h2_est` (numeric): target disease h<SUP>2</SUP>.
+  - `target_disease_h2_se` (numeric): target disease h<SUP>2</SUP> s.e..
+  - `selected_auxD` (character): auxiliary diseases.
+  - `h2pleio_uncorr` (numeric): pre-correction h<SUP>2</SUP><SUB>pleio</SUB> estimate.
+  - `h2pleio_uncorr_se` (numeric): pre-correction h<SUP>2</SUP><SUB>pleio</SUB> jackknife s.e. estimate.
+  - `percentage_h2pleio_uncorr` (numeric): pre-correction h<SUP>2</SUP><SUB>pleio</SUB> / h<SUP>2</SUP> estimate.
+  - `percentage_h2pleio_uncorr_se` (numeric): pre-correction h<SUP>2</SUP><SUB>pleio</SUB> / h<SUP>2</SUP> jackknife s.e. estimate.
+  - `percentage_h2pleio_jackknife_uncorr` (numeric): vector of all pre-correction h<SUP>2</SUP><SUB>pleio</SUB> / h<SUP>2</SUP> jackknife estimates in default 200 blocks.
+  - `h2pleio_corr` (numeric): post-correction h<SUP>2</SUP><SUB>pleio</SUB> estimate.
+  - `h2pleio_corr_se` (numeric): post-correction h<SUP>2</SUP><SUB>pleio</SUB> jackknife s.e. estimate.
+  - `percentage_h2pleio_corr` (numeric): post-correction h<SUP>2</SUP><SUB>pleio</SUB> / h<SUP>2</SUP> estimate.
+  - `percentage_h2pleio_corr_se` (numeric): post-correction h<SUP>2</SUP><SUB>pleio</SUB> / h<SUP>2</SUP> jackknife s.e. estimate.
+  - `corrected_weight` (numeric): corrected weight ξc in bias correction.
+
+
+
+### Leave-category-out analysis instruction  
+* If you want to compute pleiotropic heritability with respect to a subset of auxiliary disease, you can just specify the subset as the auxiliary disease and repeat step 1 and 2
+* Estimating the contribution of a subset of auxiliary categories or diseases requires careful consideration due to an inherent pruning procedure. Our recommended approach is as follows. 
+    * For analyses excluding the target disease category or a single specified category:
+         * First, conduct the analyses using all auxiliary diseases.
+         * Then, remove the auxiliary diseases within the specified category from `post_correction_results$selected_auxD`.
+         * Update the `phenotype` and `munged_sumstats` input parameters with the remaining auxiliary diseases.
+         * Rerun Step 2.
+    * For analyses excluding the target disease category and an additional specified category:
+         * First, conduct the analyses using all auxiliary diseases _excluding_ the target disease category.
+         * Then, remove the auxiliary diseases within the specified category from `post_correction_results$selected_auxD`.
+         * Update the `phenotype` and `munged_sumstats` input parameters with the remaining auxiliary diseases.
+         * Rerun Step 2.
+    * This procedure will ensure the consistency of pruning with the subsequent analyses. 
