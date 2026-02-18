@@ -1,7 +1,7 @@
 # pleioh2g
-R package used in 'Pleiotropic heritability quantifies the shared genetic variance of common diseases'
+R package used in 'Pleiotropic shared heritability quantifies the shared genetic variance of common diseases'
 
-## **Definition and estimation of pleiotropic heritability (h<SUP>2</SUP><SUB>pleio</SUB>)**
+## **Definition and estimation of pleiotropic shared heritability (h<SUP>2</SUP><SUB>pleio</SUB>)**
 See Figure 1 in manuscript:
 ![image](https://github.com/user-attachments/assets/f7424522-f1ba-4312-9db6-e10b2e8e47a1)
 
@@ -84,6 +84,7 @@ An output line will provide your post-correction h<SUP>2</SUP><SUB>pleio</SUB> /
   - `percentage_h2pleio_uncorr_se` (numeric): pre-correction h<SUP>2</SUP><SUB>pleio</SUB> / h<SUP>2</SUP> jackknife s.e. estimate.
   - `percentage_h2pleio_jackknife_uncorr` (numeric): vector of all pre-correction h<SUP>2</SUP><SUB>pleio</SUB> / h<SUP>2</SUP> jackknife estimates in default 200 blocks.
   - `h2pleio_corr` (numeric): post-correction h<SUP>2</SUP><SUB>pleio</SUB> estimate.
+  - `h2pleio_corr_se` (numeric): post-correction h<SUP>2</SUP><SUB>pleio</SUB> estimate s.e..
   - `percentage_h2pleio_corr` (numeric): post-correction h<SUP>2</SUP><SUB>pleio</SUB> / h<SUP>2</SUP> estimate.
   - `percentage_h2pleio_corr_se` (numeric): post-correction h<SUP>2</SUP><SUB>pleio</SUB> / h<SUP>2</SUP> jackknife s.e. estimate.
   - `percentage_h2pleio_corr_Z` (numeric): post-correction h<SUP>2</SUP><SUB>pleio</SUB> / h<SUP>2</SUP> estimate Z score.
