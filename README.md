@@ -86,12 +86,11 @@ post_correction_results<-pruning_pleioh2g_wrapper(G,phenotype,munged_sumstats,ld
 
 target_pheno_list<-paste0(gwas_munge_dir,phenotype,'.sumstats.gz')
 GWAS_list <- lapply(1:length(phenotype), function(i) fread(target_pheno_list[i]) %>% filter(!is.na(N)))
-munged_sumstats = setNames(GWAS_list, paste0('GWAS_', target_category_pheno))
+munged_sumstats = setNames(GWAS_list, phenotype)
 
 hmp3 <- './eur_w_ld_chr/w_hm3.snplist'
 ld_path<-'./eur_w_ld_chr/'
 wld_path<-'./eur_w_ld_chr/'
-
 ```
 
 
