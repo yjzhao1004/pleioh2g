@@ -22,10 +22,7 @@ For bug reports, please email: yujiezhao@hsph.harvard.edu.
 
 ### **Installation**:
 ```>
-install.packages("devtools")
-library(devtools)
-devtools::install_github("yjzhao1004/pleioh2g")
-library(pleioh2g)
+install.packages("pleioh2g")
 ```
 ### **Data Preparation**
 * We used 1000 Genomes Project Europeans as a reference LD panel to estimate genetic correlation. 1000G European LD-scores and HapMap 3 SNPs list are available at https://data.broadinstitute.org/alkesgroup/LDSCORE.
