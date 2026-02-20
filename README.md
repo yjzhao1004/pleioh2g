@@ -23,6 +23,7 @@ For bug reports, please email: yujiezhao@hsph.harvard.edu.
 ### **Installation**:
 ```>
 install.packages("devtools")
+library(devtools)
 devtools::install_github("yjzhao1004/pleioh2g")
 library(pleioh2g)
 ```
