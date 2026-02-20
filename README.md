@@ -30,6 +30,7 @@ library(pleioh2g)
 * We have published the package on CRAN (https://cran.r-project.org/web/packages/pleioh2g). You can choose to install the package from CRAN as below but without the implemented example summary statistics and 1000G EUR LD scores due to the limited memory.
 ```>
 install.packages("pleioh2g")
+library(pleioh2g)
 ```
 
 ### **Data Preparation**
