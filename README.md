@@ -80,6 +80,21 @@ sample_rep <- 1000
 
 post_correction_results<-pruning_pleioh2g_wrapper(G,phenotype,munged_sumstats,ld_path, wld_path, sample_prev, population_prev,n_block, hmp3,sample_rep)
 ```
+* If you install the package from CRAN, you should upload the 'munged_sumstats' and set the 'ld_path', 'wld_path', 'hmp3' pathway from your own file before runing the function: pruning_pleioh2g_wrapper().
+```
+##"gwas_munge_dir" is the directory where you store the summary statistics data. Each summary statistics file is named in the format “phenotype.sumstat.gz”, where phenotype is specified in the beginning.
+
+target_pheno_list<-paste0(gwas_munge_dir,phenotype,'.sumstats.gz')
+GWAS_list <- lapply(1:length(phenotype), function(i) fread(target_pheno_list[i]) %>% filter(!is.na(N)))
+munged_sumstats = setNames(GWAS_list, paste0('GWAS_', target_category_pheno))
+
+hmp3 <- './eur_w_ld_chr/w_hm3.snplist'
+ld_path<-'./eur_w_ld_chr/'
+wld_path<-'./eur_w_ld_chr/'
+
+```
+
+
 An output line will provide your post-correction h<SUP>2</SUP><SUB>pleio</SUB> / h<SUP>2</SUP> estimate, along with a result list `post_correction_results`, containing the following elements：
   - `target_disease` (character): The value "401.1".
   - `target_disease_h2_est` (numeric): target disease h<SUP>2</SUP>.
