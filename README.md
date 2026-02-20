@@ -8,7 +8,7 @@ See Figure 1 in manuscript:
 
 The total phenotypic variance of the target disease consists of genetic variance (G) and environmental variance (E). The genetic variance of the target disease is partitioned into a disease-specific component and a pleiotropic component. The disease-specific component is not shared with the auxiliary diseases, and the pleiotropic component consists of a linear combination of the genetic values (G<SUB>1</SUB>, G<SUB>2</SUB>, …, G<SUB>n</SUB>) for auxiliary diseases 1 to n.
 
-We define **pleiotropic heritability h<SUP>2</SUP><SUB>pleio</SUB>** as the liability-scale genetic variance (estimated from SNPs) of a target disease that is shared with a specific set of auxiliary diseases. 
+We define **pleiotropic shared heritability h<SUP>2</SUP><SUB>pleio</SUB>** as the liability-scale genetic variance (estimated from SNPs) of a target disease that is shared with a specific set of auxiliary diseases. 
 ## **PHBC**
 Our method uses multiple-trait GWAS summary statistics as input. We estimate h<SUP>2</SUP><SUB>pleio</SUB> from GWAS summary statistics by estimating the proportion of variance explained from an estimated genetic correlation matrix and employing a Monte-Carlo bias correction procedure to account for sampling noise in genetic correlation estimates. 
 
@@ -27,7 +27,7 @@ library(devtools)
 devtools::install_github("yjzhao1004/pleioh2g")
 library(pleioh2g)
 ```
-* We have published the package on CRAN (https://cran.r-project.org/web/packages/pleioh2g). You can choose to install the package from CRAN as below but without the implemented example summary statistics and 1000G EUR LD scores due to the limited memory.
+* We have published the package on CRAN (https://cran.r-project.org/web/packages/pleioh2g). You can choose to install the package from CRAN as below but without the implemented example summary statistics and 1000G EUR LD scores due to the limited memory, which cannot use "sumstats_munged_example_input()" function in Step 1. 
 ```>
 install.packages("pleioh2g")
 library(pleioh2g)
@@ -47,10 +47,10 @@ We also provide all LDSC-format .sumstat.gz data used in our analyses. (See Data
 library(pleioh2g)
 munged_sumstats = list("401.1" = sumstats_munged_example_input(example = "401.1"), "250.2" = sumstats_munged_example_input(example = "250.2"),"296.22" = sumstats_munged_example_input(example = "296.22"))
 ```
-### Step 2: Compute pleiotropic heritability with bias correction
+### Step 2: Compute pleiotropic shared heritability with bias correction
 The function **pruning_pleioh2g_wrapper()** (See example as below) is to compute h<SUP>2</SUP><SUB>pleio</SUB> / h<SUP>2</SUP> while performing pruning and bias correction with ldsc-format GWAS summary statistics (.sumstat.gz) as input.
 
-* We note that h<SUP>2</SUP><SUB>pleio</SUB> is a function of both the target disease and the selected set of auxiliary diseases/traits. We use the ratio of pleiotropic heritability vs. total heritability (h<SUP>2</SUP><SUB>pleio</SUB> / h<SUP>2</SUP>) to quantify the proportion of genetic variance that is pleiotropic.
+* We note that h<SUP>2</SUP><SUB>pleio</SUB> is a function of both the target disease and the selected set of auxiliary diseases/traits. We use the ratio of pleiotropic shared heritability vs. total heritability (h<SUP>2</SUP><SUB>pleio</SUB> / h<SUP>2</SUP>) to quantify the proportion of genetic variance that is pleiotropic.
 * We just use 5 jackknife blocks and 3 traits as example for quick computation test. If you set 200 jackknife blocks and include more than 50 traits, the procedure will cost more than 10 hours.
 
 ```
@@ -58,7 +58,7 @@ The function **pruning_pleioh2g_wrapper()** (See example as below) is to compute
 phenotype<-c("401.1","250.2","296.22")
 
 # First to determine which disease in your list is the target disease
-G = 1 # Index of target disease in trait list - this example is to compute pleiotropic heritability for "401.1".
+G = 1 # Index of target disease in trait list - this example is to compute pleiotropic shared heritability for "401.1".
 
 # Input ldsc format .sumstat.gz data
 munged_sumstats = list("401.1" = sumstats_munged_example_input(example = "401.1"), "250.2" = sumstats_munged_example_input(example = "250.2"),"296.22" = sumstats_munged_example_input(example = "296.22"))
@@ -115,7 +115,7 @@ An output line will provide your post-correction h<SUP>2</SUP><SUB>pleio</SUB> /
 
 
 ### Leave-category-out analysis instruction  
-* If you want to compute pleiotropic heritability with respect to a subset of auxiliary disease, you can just specify the subset as the auxiliary disease and repeat step 1 and 2
+* If you want to compute pleiotropic shared heritability with respect to a subset of auxiliary disease, you can just specify the subset as the auxiliary disease and repeat step 1 and 2
 * Estimating the contribution of a subset of auxiliary categories or diseases requires careful consideration due to an inherent pruning procedure. Our recommended approach is as follows. 
     * For analyses excluding the target disease category or a single specified category:
          * First, conduct the analyses using all auxiliary diseases.
