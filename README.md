@@ -69,9 +69,12 @@ wld_path<-fs::path(fs::path_package("extdata/eur_w_ld_chr", package = "pleioh2g"
 hmp3<-fs::path(fs::path_package("extdata/w_hm3.snplist", package = "pleioh2g"))
 
 # If your trait is disease phenotype or the other binary trait, specify prevalence to compute the liability-scale heritability; If you don't specify this, it will compute observed-scale heritability.
-# If your traits or GWAS don't have available prevalence, you should set sample_prev <- NULL and population_prev <- NULL in the pruning_pleioh2g_wrapper()
+
 sample_prev <- c(0.37,0.1,0.17)
 population_prev <- c(0.37,0.1,0.17)
+
+# If your traits or GWAS don't have available prevalence, you should set sample_prev <- NULL and population_prev <- NULL
+
 
 # Specify number of genomic-jackknife block; We use n_block = 5 as example for quick computation, but we recommand to use 200 jackknife blocks; If you don't specify this, the default number is 200.
 n_block<-5
