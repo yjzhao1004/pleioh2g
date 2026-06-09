@@ -1,0 +1,6 @@
+exportPattern("^[[:alpha:]]+")
+importFrom(dplyr, "%>%")
+importFrom(stats, cov, dnorm, median, na.omit, pnorm, qchisq, qnorm, sd, setNames)
+importFrom(tibble, tibble)
+importFrom(cli, cli_alert_warning)
+importFrom(rlang, .data)
