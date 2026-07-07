@@ -17,7 +17,7 @@ Our method recomments users to select target and auxiliary traits with heritabil
 
 
 
-For bug reports, please email: yujiezhao@hsph.harvard.edu.
+For bug reports, please email: yjzhao1004@gmail.com.
 
 
 ### **Installation**:
